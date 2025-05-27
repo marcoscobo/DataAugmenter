@@ -1,0 +1,9 @@
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+You are a helpful assistant that only replies in JSONL
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+Below, you will be given a document. Your task is to create  {n} JSONL objects with two keys: "Question" and "Answer". Both question and answer should be self-contained and clearly relate to the given document.
+
+Now, process the following document and generate {n} question-answer pairs:
+
+{document}
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "augmenter"
+version = "1.0.0"
+description = "This library provides a set of tools for data augmentation, including text generation, data processing, and integration with multiple AI providers."
+readme = "README.md"
+authors = [{ name = "Marcos Cobo Carrillo", email = "mcobo@cic.es" }]
+license-files = ["LICENSE.txt"]
+dependencies = ["pandas", "numpy", "requests", "tqdm", "scikit-learn", "sentence-transformers", "rich", "pyyaml", "langchain-community", "langchain", "pymupdf", "openai"]
+keywords = ["Augmentation", "GenAI", "Data", "Analytics", "ELFMo"]
+urls = { "ELFMo" = "https://elfmo.eu", "CIC" = "https://cic.es" }
+requires-python = ">=3.9"
+
+[tool.setuptools]
+packages = ["augmenter"]

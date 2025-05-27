@@ -1,0 +1,8 @@
+# Library files
+/*.egg-info
+/build
+*/__pycache__
+# Examples runs
+*/temp
+*.checkpoint
+*.jsonl
