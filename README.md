@@ -113,6 +113,15 @@ The input dataset should be in the form of a DataFrame with a single column name
 * **Key Methods**:
   * `generate_queries_from_document(document, m, n)`: Generates `n` queries for `m` iterations using the specified LLM.
 
+#### `OpenAIAugmenter`
+
+* **Purpose**: Connects to the OpenAI API to generate queries based on a provided document.
+* **Attributes**:
+  * `params`: Optional dictionary of parameters to customize the OpenAI API call (e.g., model, messages, temperature, etc.).
+  * `api_key`: The OpenAI API key used for authentication.
+* **Key Methods**:
+  * `generate_queries_from_document(document, m, n)`: Generates `n` queries for `m` iterations using the specified OpenAI model and parameters.
+
 #### `DatasetAugmenter`
 
 * **Purpose**: Manages the entire dataset augmentation process, from splitting to filtering.
