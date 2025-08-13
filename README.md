@@ -1,20 +1,24 @@
+![Data Augmenter Banner](https://github.com/marcoscobo/DataAugmenter/blob/main/docs/media/slim_banner.png?raw=true)
+
+---
+
 # Data Augmenter
+
+[![License MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/marcoscobo/DataAugmenter/blob/main/LICENSE) [![Supported Python Versions](https://img.shields.io/pypi/pyversions/python-data-augmenter.svg)](https://pypi.org/project/python-data-augmenter/) [![PyPI Latest Release](https://img.shields.io/pypi/v/python-data-augmenter.svg)](https://pypi.org/project/python-data-augmenter/) [![Last commit](https://img.shields.io/github/last-commit/marcoscobo/DataAugmenter.svg)](https://github.com/marcoscobo/DataAugmenter/commits/main) [![Contributors](https://img.shields.io/github/contributors/marcoscobo/DataAugmenter.svg)](https://github.com/marcoscobo/DataAugmenter/graphs/contributors) [![Issues](https://img.shields.io/github/issues/marcoscobo/DataAugmenter.svg)](https://github.com/marcoscobo/DataAugmenter/issues)
 
 Data Augmenter has been created to take advantage of the potential of foundational models by allowing us to generate new data from a small sample. Thanks to Data Augmenter we will be able to increase the size of our datasets by including variability in the data. In addition, we can extract structured datasets ready for fine-tuning of unstructured information.
 
-# Installing Prerequisites
+## Installation
 
 It is recommended to use conda environments to manage and install dependencies, but if you prefer to ignore it, skip directly to point 3.
 
 1. Create an environment
-
    You can create a new environment using the conda create command. Replace myenv with your desired environment name and specify the Python version if needed.
 
    ```bash
-   conda create --name myenv python=3.10
+   conda create --name myenv python=3.11
    ```
 2. Activate the environment
-
    After creating the environment, activate it using the following command:
 
    ```bash
@@ -23,40 +27,23 @@ It is recommended to use conda environments to manage and install dependencies, 
 
    You should now be working with the activated environment.
 3. Installing dependencies
-
-   Acess the folder where Data Augmenter is downloaded to install the required dependencies with pip.
+   Install ir from [PyPI](https://pypi.python.org/pypi/python-data-augmenter/) directly using pip:
 
    ```
-   cd ./path-to-installation
-   pip install . --upgrade
+   pip install python-data-augmenter
    ```
 
    At this point Data Augmenter is ready to use.
 
-# Modules
+## Modules
 
-This library consists of two modules, "augmentation" and "document_chunker".
+This library consists of two modules, `augmentation` and `document_chunker`.
 
-## Document Chunker
+### Document Chunker
 
 This module contains the `DocumentChunker` class. This utility has been designed to load and process specific types of files (`markdown`, `txt`, `pdf` and `jsonl`) by chunking them and inserting them in a dataframe.
 
-### Class Details
-
-#### `DocumentChunker`
-
-* **Purpose** : Handles the loading, chunking, and structuring of documents in various formats.
-* **Attributes** :
-  * `chunk_size`: Optional maximum number of characters allowed in each chunk.
-  * `chunk_overlap`: Optional number of characters that overlap between consecutive chunks, ensuring continuity.
-  * `separator`: Optional character or string used to split the text into chunks.
-* **Methods** :
-  * `load_file(file_path)`: Loads the specified file and prepares it for chunking based on its format.
-  * `chunk_document(document)`: Splits the loaded document into chunks according to the defined `chunk_size`, `chunk_overlap`, and `separator`, then stores the result in a DataFrame.
-  * `save_to_dataframe()`: Saves the processed chunks into a DataFrame, ready for further augmentation or analysis.
-  * `process_and_chunk(file_path)`: Combines file loading and chunking into a single method for streamlined processing.
-
-### Usage
+#### Usage
 
 1. Initialize the DocumentChunker:
 
@@ -84,65 +71,13 @@ This module contains the `DocumentChunker` class. This utility has been designed
    dataset = pd.DataFrame({"document": docs})
    ```
 
-## Augmentation
+### Augmentation
 
 This module consists of two main types of classes: `Augmenters` and `Datasets`. `Augmenters` interface with Large Language Models (LLMs) through specified endpoints, providing the functionality to generate new data based on input documents. `Datasets` handle the dataset structure and offer methods for augmenting, filtering, and storing query-answer pairs relevant to the provided document.
 
 The input dataset should be in the form of a DataFrame with a single column named "document" that contains chunks of your source document. The output will be a `.jsonl` file, where each entry includes a generated question-answer pair along with the corresponding document chunk. If filtering is applied, each entry will also include the cosine similarity score between the QA pair and its source chunk.
 
-### Class Details
-
-#### `TGIAugmenter`
-
-* **Purpose**: Connects to a TGI (Text Generation Inference) endpoint to generate queries based on a provided document.
-* **Attributes**:
-  * `endpoint`: The URL of the TGI endpoint used to generate queries.
-  * `params`: Optional dictionary of parameters to customize the LLM's behavior.
-  * `prompt`: Optional template for the prompt used to generate queries, with placeholders for dynamic content.
-* **Key Methods**:
-  * `generate_queries_from_document(document, m, n)`: Generates `n` queries for `m` iterations using the specified LLM.
-
-#### `OllamaAugmenter`
-
-* **Purpose**: Connects to an Ollama endpoint to generate queries based on a provided document.
-* **Attributes**:
-  * `endpoint`: The URL of the Ollama endpoint used to generate queries.
-  * `model`: Optional model name used for query generation, defaulting to `'llama3'`.
-  * `prompt`: Optional template for the prompt used to generate queries, with placeholders for dynamic content.
-  * `options`: Optional dictionary of settings to customize the query generation process.
-* **Key Methods**:
-  * `generate_queries_from_document(document, m, n)`: Generates `n` queries for `m` iterations using the specified LLM.
-
-#### `OpenAIAugmenter`
-
-* **Purpose**: Connects to the OpenAI API to generate queries based on a provided document.
-* **Attributes**:
-  * `params`: Optional dictionary of parameters to customize the OpenAI API call (e.g., model, messages, temperature, etc.).
-  * `api_key`: The OpenAI API key used for authentication.
-* **Key Methods**:
-  * `generate_queries_from_document(document, m, n)`: Generates `n` queries for `m` iterations using the specified OpenAI model and parameters.
-
-#### `DatasetAugmenter`
-
-* **Purpose**: Manages the entire dataset augmentation process, from splitting to filtering.
-* **Attributes**:
-  * `augmenter`: An instance of either `TGIAugmenter` or `OllamaAugmenter` used to generate queries.
-  * `dataset`: The input dataset, typically a DataFrame containing the document chunks.
-  * `augmented_dataset`: Stores the augmented dataset after processing.
-  * `filtered_dataset`: Stores the dataset after applying filtering methods.
-  * `augmented_dataset_original_embeddings`: Stores embeddings of the original document chunks.
-  * `augmented_dataset_augmented_embeddings`: Stores embeddings of the augmented data.
-  * `cross_cosine_similarity_matrix`: Stores the cross cosine similarity matrix between the generated QA pairs.
-* **Key Methods**:
-  * `split_and_augment(output_dir, output_file, m, n, k, max_threads, checkpoint_file)`: Splits the dataset in `k` batches, generates QA pairs using `max_threads` threads (allowing query batching to the `Augmenter` class, increasing processing performance), each k batch in one thread, generating `n` queries for `m` iterations for each dataset row, and saves the results. The process stores checkpoint to recover the status in failure case.
-  * `get_embeddings(output_dir, original_col, augmented_col, embeddings_model_id)`: Computes embeddings for the original and augmented data.
-  * `get_cosine_similarity()`: Calculates cosine similarity for each QA pair and its original document.
-  * `get_cross_cosine_similarity()`: Calculates a cross cosine similarity matrix between each possible pair of generated QA pairs.
-  * `filter_dataset(cosine_similarity_threshold, cross_cosine_similarity_threshold, output_file)`: Filters the dataset based on cosine similarity thresholds.
-  * `load_augmented_dataset(file)`: Load an augmented_dataset to the class from the specified file.
-  * `load_augmented_dataset_embeddings(augmented_dataset_original_embeddings_file, augmented_dataset_augmented_embeddings_file)`: Load the augmented_dataset embeddings to the class from the specified files.
-
-### Usage
+#### Usage
 
 For the following usage example, we have used a Ollama client exposed at localhost:11434 port 80 with the tinyllama 1.1b model.
 
