@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include AUTHORS.md
+include pyproject.toml
+recursive-include docs *
+recursive-include augmenter/config *

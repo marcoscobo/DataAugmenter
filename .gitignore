@@ -1,6 +1,7 @@
 # Library files
 /*.egg-info
 /build
+/dist
 */__pycache__
 # Examples runs
 */temp

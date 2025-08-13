@@ -1,0 +1,12 @@
+pandas
+numpy
+requests
+tqdm
+scikit-learn
+sentence-transformers
+rich
+PyYAML
+langchain-community
+langchain
+PyMuPDF
+openai

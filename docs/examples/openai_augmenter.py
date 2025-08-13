@@ -1,12 +1,15 @@
 from augmenter.document_chunker import DocumentChunker
 from augmenter.augmentation import DatasetAugmenter, OpenAIAugmenter
 import os
+import certifi
 
+## Loading the dataset
 # chunk_size: size of the chunk to be processed
 # chunk_overlap: size of the overlap between chunks
 chunker = DocumentChunker(chunk_size=2000, chunk_overlap=200)
 dataset = chunker.process_file('data/cyberSEC.pdf')
 
+## Defining the augmentation parameters
 custom_openai_system_prompt = """
 You are a helpful cybersecurity assistant that only replies in JSONL
 """
@@ -31,18 +34,6 @@ The information about the task is:
 
 {document}"
 """
-
-custom_openai_prompt = [
-    {
-        "role": "system",
-        "content": custom_openai_system_prompt
-    },
-    {
-        "role": "user",
-        "content": custom_openai_user_prompt
-    }
-]
-
 params = {
     "model": 'gpt-4o-mini',
     "messages": None,
@@ -63,33 +54,48 @@ params = {
     "tool_choice": None,
     "user": None,
     "stream": False,
-    "messages": custom_openai_prompt
+    "messages": [
+        {
+            "role": "system",
+            "content": custom_openai_system_prompt
+        },
+        {
+            "role": "user",
+            "content": custom_openai_user_prompt
+        }
+    ]
 }
-augmenter = OpenAIAugmenter(params=params, api_key=os.getenv("OPENAI_API_KEY"))
 
-print("Augmenting dataset...")
+## Initializing the augmenter with the parameters and OpenAI API key
+api_key=os.getenv("OPENAI_API_KEY")
+# Reset certificate settings if incorrect
+if not os.path.exists(os.environ.get("SSL_CERT_FILE", "")):
+    os.environ["SSL_CERT_FILE"] = certifi.where()
+augmenter = OpenAIAugmenter(params=params, api_key=api_key)
 
+## Initializing the DatasetAugmenter with the augmenter and dataset
 dataset_augmenter = DatasetAugmenter(augmenter=augmenter, dataset=dataset)
 
+## Augmenting the dataset
+print("Augmenting dataset...")
 # n: number of augmentations per chunk
 # m: number of times to replay the augmentation
 # k: steps to save the augmented dataset to recovery from errors
-dataset_augmenter.split_and_augment(n=50, m=3, k=20, max_threads=10)
-
+dataset_augmenter.split_and_augment(n=5, m=1, k=10, max_threads=10)
 print("Augmentation complete.")
+
+## Filtering the dataset by cosine similarity and cross cosine similarity
 print("Getting embeddings...")
 dataset_augmenter.get_embeddings()
-
 print("Getting cosine similarity...")
 dataset_augmenter.get_cosine_similarity()
 print("Getting cross cosine similarity...")
 dataset_augmenter.get_cross_cosine_similarity()
-
 # cosine_similarity_threshold: get rows with cosine similarity greater than this threshold
 # cross_cosine_similarity_threshold: discard one of the two rows with cross cosine similarity greater than this threshold
 dataset_augmenter.filter_dataset(cosine_similarity_threshold=0.5, cross_cosine_similarity_threshold=0.95)
 
-
+## Showing the lengths of the datasets
 print(f'Original dataset length: {len(dataset_augmenter.dataset)}')
 print(f'Full augmented dataset length: {len(dataset_augmenter.augmented_dataset)}')
 print(f'Filteres augmented dataset length: {len(dataset_augmenter.filtered_dataset)}')
